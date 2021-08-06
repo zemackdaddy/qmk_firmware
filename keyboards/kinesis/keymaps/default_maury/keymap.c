@@ -1,8 +1,13 @@
 #include QMK_KEYBOARD_H
 
-enum combo_events {
+#include "artsey.h"
+#include "keymap_combo.h"
+#include "artsey.c"
+
+/* enum combo_events {
   RCTLPRGRM_RESET
 };
+ */
 
 // Tap Dance declarations
 enum tap_dance_codes {
@@ -16,6 +21,7 @@ enum tap_dance_codes {
 #define QWERTY 0 // Base qwerty
 #define MOUSE 1
 #define NAV 2
+#define _A_BASE 3
 
 /****************************************************************************************************
 *
@@ -45,7 +51,7 @@ enum tap_dance_codes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [QWERTY] = LAYOUT(
-           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
+           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,TO(3)  ,KC_F8,
            HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
            MEH_T(KC_TAB), TD(DANCE_0)   ,TD(DANCE_1)   ,LT(1,KC_E)   ,TD(DANCE_R)   ,KC_T   ,
            KC_CAPS,MT(MOD_LALT,KC_A)   ,MT(MOD_LCTL,KC_S)   ,MT(MOD_LGUI,KC_D)   ,MT(MOD_LSFT,KC_F)   ,LT(1,KC_G)   ,
@@ -67,7 +73,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
 [MOUSE] = LAYOUT(
-           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
+           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  , KC_F8,
            KC_EQL, KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
            KC_TAB, KC_Q   ,KC_W   ,LT(1,KC_E)   ,KC_BTN1   ,KC_BTN2  ,
            KC_CAPS,KC_A   ,KC_S   ,KC_D   ,KC_F   ,KC_G   ,
@@ -109,6 +115,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            KC_PGDN,KC_ENTER ,KC_SPC
     ),
 
+[_A_BASE] = LAYOUT(
+           TO(QWERTY), KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,TO(0)  ,KC_F8,
+           HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
+           MEH_T(KC_TAB), TD(DANCE_0)   ,TD(DANCE_1)   ,LT(1,KC_E)   ,TD(DANCE_R)   ,KC_T   ,
+           KC_CAPS,MT(MOD_LALT,KC_A)   ,MT(MOD_LCTL,KC_S)   ,MT(MOD_LGUI,KC_D)   ,MT(MOD_LSFT,KC_F)   ,LT(1,KC_G)   ,
+           KC_LSFT,KC_Z   ,KC_X   ,KC_C   ,KC_V   ,KC_B   ,
+                   KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
+			                            KC_LGUI,  KC_LALT,
+                                                        KC_HOME,
+                                  KC_BSPC ,KC_DEL , KC_END ,
+
+  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  ,KC_PAUS, KC_FN0, KC_FN0,
+	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
+	KC_Y   ,KC_U   ,LT(1,KC_I)   ,KC_O   ,KC_P   ,MEH_T(KC_BSLS),
+	LT(1,KC_H)   ,A_BASE_A,   A_BASE_R,   A_BASE_T,   A_BASE_S,  KC_QUOT,
+	KC_N   ,  A_BASE_E,   A_BASE_Y,   A_BASE_I,   A_BASE_O  ,KC_RSFT,
+                  KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
+           KC_RCTL, KC_RGUI,
+           KC_PGUP,
+           KC_PGDN,KC_ENTER ,KC_SPC
+    ),
 };
 
 void matrix_init_user(void) {
@@ -119,12 +146,13 @@ void matrix_scan_user(void) {
 
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  return true;
-}
+//bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+//  return true;
+//}
 
-void process_combo_event(uint8_t combo_index, bool pressed) {
+/* void process_combo_event(uint16_t combo_index, bool pressed) {
   switch(combo_index) {
+      #include "combos.def"
    case RCTLPRGRM_RESET:
       if (pressed) {
        reset_keyboard();
@@ -132,7 +160,7 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
       break;
   }
 }
-
+ */
 void led_set_user(uint8_t usb_led) {
 
 }
