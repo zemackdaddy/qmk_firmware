@@ -9,6 +9,10 @@ enum tap_dance_codes {
     DANCE_C,
     DANCE_T,
     DANCE_V,
+    //need cut and undo and save
+    //left hand mouse buttons and speed
+    //mouse layer needs cut/copy/paste/undo or maybe make the f1-f4 do these in every layer
+    //mouse layer could exit with F1 instead of end
 };
 
 #define QWERTY 0 // Base qwerty
@@ -67,9 +71,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [MOUSE] = LAYOUT(
            KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  , KC_F8,
            KC_EQL, KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
-           KC_TAB, KC_Q   ,KC_W   ,LT(1,KC_E)   ,KC_BTN1   ,KC_BTN2  ,
+           KC_TAB, KC_Q   ,KC_BTN1   ,LT(1,KC_E)   ,KC_BTN2   ,KC_T  ,
            KC_CAPS,KC_A   ,KC_S   ,KC_D   ,KC_F   ,KC_G   ,
-           KC_LSFT,KC_Z   ,KC_X   ,KC_C   ,KC_V   ,KC_B   ,
+           KC_LSFT,KC_Z   ,KC_X   ,TD(DANCE_C)  , TD(DANCE_V)   ,KC_B   ,
                    KC_GRV ,KC_INS ,LGUI(LALT(KC_I)),LGUI(LALT(KC_K)),
 			   KC_LCTL,KC_LALT,
                                     KC_HOME,
