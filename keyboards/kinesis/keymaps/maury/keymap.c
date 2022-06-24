@@ -1,8 +1,16 @@
 #include QMK_KEYBOARD_H
 
+bool is_alt_tab_active = false; // ADD this near the begining of keymap
+uint16_t alt_tab_timer = 0;     // we will be using them soon
+
+enum custom_keycodes {          // Make sure have the awesome keycode ready
+  ALT_TAB = SAFE_RANGE,
+};
+
 // Tap Dance declarations
 enum tap_dance_codes {
     TD_ESC_CAPS,
+    TD_BSPACE_NAV_LAYER,
     DANCE_Q,
     DANCE_W,
     DANCE_R,
@@ -17,7 +25,8 @@ enum tap_dance_codes {
 
 #define QWERTY 0 // Base qwerty
 #define MOUSE 1
-#define NAV 2
+#define MOD 2
+#define CLEAN 3
 
 /****************************************************************************************************
 *
@@ -50,22 +59,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
            HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
            MEH_T(KC_TAB), KC_Q   ,KC_W   ,LT(1, KC_E)   ,KC_R   ,KC_T   ,
-           KC_CAPS, KC_A   ,KC_S   ,KC_D   ,KC_F   ,KC_G   ,
+           KC_CAPS, LGUI_T(KC_A)   ,LALT_T(KC_S)   ,LCTL_T(KC_D)   ,LSFT_T(KC_F)   ,KC_G   ,
            KC_LSFT,KC_Z   ,KC_X   , KC_C  , KC_V   ,KC_B   ,
                    KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
 			                            KC_LCTL,  KC_LALT,
                                                         KC_HOME,
-                                  KC_BSPC ,KC_DEL , KC_END ,
+                                  LT(MOD, KC_BSPC), KC_DEL , KC_END ,
 
   KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, KC_FN0,
 	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
 	KC_Y   ,KC_U   ,KC_I   ,KC_O   ,KC_P   ,MEH_T(KC_BSLS),
-	KC_H   ,KC_J   ,KC_K   ,KC_L   ,KC_SCLN,  KC_QUOT,
+	KC_H   ,RSFT_T(KC_J)   ,RCTL_T(KC_K)   ,LALT_T(KC_L)   ,RGUI_T(KC_SCLN),  KC_QUOT,
 	KC_N   ,KC_M   ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
                   KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
            KC_RGUI,  KC_RCTL, 
-           KC_PGUP,
-           KC_PGDN,KC_ENTER ,KC_SPC
+           KC_LALT,
+           KC_PGDN,KC_ENTER ,  LT(MOD, KC_SPC)
     ),
 
 [MOUSE] = LAYOUT(
@@ -89,34 +98,83 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            KC_PGDN,KC_ENTER ,KC_SPC
     ),
 
-[NAV] = LAYOUT(
-           TD(TD_ESC_CAPS), KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
-           HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
-           KC_TAB, TD(DANCE_Q)   ,TD(DANCE_W)   ,LT(1,KC_E)   ,KC_R   ,KC_T   ,
-           KC_CAPS, C(S(KC_LEFT))   ,S(KC_DOWN)   ,S(KC_UP)   ,C(S(KC_RIGHT))   ,LT(1,KC_G)   ,
-           KC_LSFT,KC_Z   ,KC_X   ,KC_NO   ,KC_V   ,KC_B   ,
+[MOD] = LAYOUT(
+           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
+           KC_EQL, KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
+           KC_TAB, KC_Q   ,RCS(KC_TAB)   ,RCTL(KC_T)   ,RCTL(KC_TAB)   ,KC_T   , 
+           KC_CAPS, KC_A   ,KC_S   ,ALT_TAB   ,KC_F   ,KC_G   ,
+           KC_LSFT,KC_Z   ,KC_X   , RCTL(KC_W)  , KC_V   ,KC_B   ,
                    KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
-			                            KC_LGUI,  KC_LALT,
+			                            KC_LCTL,  KC_LALT,
                                                         KC_HOME,
-                                  KC_BSPC ,KC_DEL , TO(QWERTY) ,
+                                  KC_SPC ,KC_DEL , KC_END ,
 
-  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK ,KC_PAUS, KC_FN0, KC_FN0,
-	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
-	G(A(KC_SLSH))   ,C(KC_LEFT)   ,KC_I   ,C(KC_RIGHT)   ,KC_P   ,KC_BSLS,
-	G(A(KC_BSLS)),  KC_LEFT   ,KC_UP   ,KC_DOWN   ,KC_RIGHT,  KC_QUOT,
+  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, KC_FN0,
+	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,KC_MINS,
+	KC_PGUP   ,KC_U   ,KC_UP   ,KC_O   ,KC_P   ,KC_BSLS,
+	KC_PGDN   ,KC_LEFT   ,KC_DOWN   ,KC_RGHT   ,KC_SCLN,  KC_QUOT,
 	KC_N   ,KC_M   ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
                   KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
-           OSM(MOD_RCTL), KC_RGUI,
+           KC_RGUI,  KC_RCTL, 
+           KC_PGUP,
+           KC_PGDN,KC_ENTER ,KC_BSPC
+      	   ),
+
+[CLEAN] = LAYOUT(
+           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
+           KC_EQL, KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
+           KC_TAB, KC_Q   ,KC_W   ,KC_E   ,KC_R   ,KC_T   ,
+           KC_CAPS, KC_A   ,KC_S   ,KC_D   ,KC_F   ,KC_G   ,
+           KC_LSFT,KC_Z   ,KC_X   , KC_C  , KC_V   ,KC_B   ,
+                   KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
+			                            KC_LCTL,  KC_LALT,
+                                                        KC_HOME,
+                                  KC_BSPC ,KC_DEL , KC_END ,
+
+  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, KC_FN0,
+	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,KC_MINS,
+	KC_Y   ,KC_U   ,KC_I   ,KC_O   ,KC_P   ,KC_BSLS,
+	KC_H   ,KC_J   ,KC_K   ,KC_L   ,KC_SCLN,  KC_QUOT,
+	KC_N   ,KC_M   ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
+                  KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
+           KC_RGUI,  KC_RCTL, 
            KC_PGUP,
            KC_PGDN,KC_ENTER ,KC_SPC
     ),
 };
 
-void matrix_init_user(void) {
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) { // This will do most of the grunt work with the keycodes.
+    case ALT_TAB:
+      if (record->event.pressed) {
+        if (!is_alt_tab_active) {
+          is_alt_tab_active = true;
+          register_code(KC_LALT);
+        }
+        alt_tab_timer = timer_read();
+        register_code(KC_TAB);
+      } else {
+        unregister_code(KC_TAB);
+      }
+      break;
+  }
+  return true;
 }
 
-void matrix_scan_user(void) {
+void matrix_scan_user(void) { // The very important timer.
+  if (is_alt_tab_active) {
+    if (timer_elapsed(alt_tab_timer) > 1000) {
+      unregister_code(KC_LALT);
+      is_alt_tab_active = false;
+    }
+  }
+}
+
+
+
+
+void matrix_init_user(void) {
 
 }
 
@@ -363,6 +421,8 @@ void dance_T_reset(qk_tap_dance_state_t *state, void *user_data) {
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
     [TD_ESC_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_CAPS),
+
+    [TD_BSPACE_NAV_LAYER] = ACTION_TAP_DANCE_LAYER_TOGGLE(KC_BSPC, MOD),
     [DANCE_Q] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_Q_finished, dance_Q_reset),
     [DANCE_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_W_finished, dance_W_reset),
     [DANCE_R] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_R_finished, dance_R_reset),
