@@ -10,7 +10,8 @@ enum custom_keycodes {          // Make sure have the awesome keycode ready
 // Tap Dance declarations
 enum tap_dance_codes {
     TD_ESC_CAPS,
-    TD_BSPACE_NAV_LAYER,
+    TD_GUI_END,
+    TD_GUI_PGDN,
     DANCE_Q,
     DANCE_W,
     DANCE_R,
@@ -64,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                    KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
 			                            KC_LCTL,  KC_LALT,
                                                         KC_HOME,
-                                  LT(MOD, KC_BSPC), KC_DEL , KC_END ,
+                                  LT(MOD, KC_BSPC), KC_DEL , TD(TD_GUI_END) ,
 
   KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, KC_FN0,
 	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
@@ -74,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                   KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
            KC_RGUI,  KC_RCTL, 
            LALT_T(KC_PGUP),
-           KC_PGDN,KC_ENTER ,  LT(MOD, KC_SPC)
+           TD(TD_GUI_PGDN),  KC_ENTER ,  LT(MOD, KC_SPC)
     ),
 
 [MOUSE] = LAYOUT(
@@ -417,12 +418,85 @@ void dance_T_reset(qk_tap_dance_state_t *state, void *user_data) {
     dance_state.step = 0;
 }
 
+uint8_t dance_TD_GUI_END_dance_step(qk_tap_dance_state_t *state);
+void dance_TD_GUI_END_finished(qk_tap_dance_state_t *state, void *user_data);
+void dance_TD_GUI_END_reset(qk_tap_dance_state_t *state, void *user_data);
+
+uint8_t dance_TD_GUI_END_dance_step(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (state->interrupted || !state->pressed) return SINGLE_TAP;
+        else return SINGLE_HOLD;
+    } else if (state->count == 2) {
+        if (state->interrupted) return DOUBLE_SINGLE_TAP;
+        else if (state->pressed) return DOUBLE_HOLD;
+        else return DOUBLE_TAP;
+    }
+    return MORE_TAPS;
+}
+void dance_TD_GUI_END_finished(qk_tap_dance_state_t *state, void *user_data) {
+    dance_state.step = dance_TD_GUI_END_dance_step(state);
+    switch (dance_state.step)  {
+        case SINGLE_TAP: register_code16(KC_END); break;
+        case SINGLE_HOLD: register_code16(KC_LGUI); break;
+        case DOUBLE_TAP: register_code16(KC_END); register_code16(KC_END); break;
+        case DOUBLE_SINGLE_TAP: tap_code16(KC_END); register_code16(KC_END);
+    }
+}
+
+void dance_TD_GUI_END_reset(qk_tap_dance_state_t *state, void *user_data) {
+    wait_ms(10);
+    switch (dance_state.step) {
+        case SINGLE_TAP: unregister_code16(KC_END); break;
+        case SINGLE_HOLD: unregister_code16(KC_LGUI); break;
+        case DOUBLE_TAP: unregister_code16(KC_END); break;
+        case DOUBLE_SINGLE_TAP: unregister_code16(KC_END); break;
+    }
+    dance_state.step = 0;
+}
+
+uint8_t dance_TD_GUI_PGDN_dance_step(qk_tap_dance_state_t *state);
+void dance_TD_GUI_PGDN_finished(qk_tap_dance_state_t *state, void *user_data);
+void dance_TD_GUI_PGDN_reset(qk_tap_dance_state_t *state, void *user_data);
+
+uint8_t dance_TD_GUI_PGDN_dance_step(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (state->interrupted || !state->pressed) return SINGLE_TAP;
+        else return SINGLE_HOLD;
+    } else if (state->count == 2) {
+        if (state->interrupted) return DOUBLE_SINGLE_TAP;
+        else if (state->pressed) return DOUBLE_HOLD;
+        else return DOUBLE_TAP;
+    }
+    return MORE_TAPS;
+}
+void dance_TD_GUI_PGDN_finished(qk_tap_dance_state_t *state, void *user_data) {
+    dance_state.step = dance_TD_GUI_PGDN_dance_step(state);
+    switch (dance_state.step)  {
+        case SINGLE_TAP: register_code16(KC_PGDN); break;
+        case SINGLE_HOLD: register_code16(KC_LGUI); break;
+        case DOUBLE_TAP: register_code16(KC_PGDN); register_code16(KC_END); break;
+        case DOUBLE_SINGLE_TAP: tap_code16(KC_PGDN); register_code16(KC_END);
+    }
+}
+
+void dance_TD_GUI_PGDN_reset(qk_tap_dance_state_t *state, void *user_data) {
+    wait_ms(10);
+    switch (dance_state.step) {
+        case SINGLE_TAP: unregister_code16(KC_PGDN); break;
+        case SINGLE_HOLD: unregister_code16(KC_LGUI); break;
+        case DOUBLE_TAP: unregister_code16(KC_PGDN); break;
+        case DOUBLE_SINGLE_TAP: unregister_code16(KC_PGDN); break;
+    }
+    dance_state.step = 0;
+}
+
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
     [TD_ESC_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_CAPS),
+    [TD_GUI_END] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_TD_GUI_END_finished, dance_TD_GUI_END_reset),
+    [TD_GUI_PGDN] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_TD_GUI_PGDN_finished, dance_TD_GUI_PGDN_reset),
 
-    [TD_BSPACE_NAV_LAYER] = ACTION_TAP_DANCE_LAYER_TOGGLE(KC_BSPC, MOD),
     [DANCE_Q] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_Q_finished, dance_Q_reset),
     [DANCE_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_W_finished, dance_W_reset),
     [DANCE_R] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_R_finished, dance_R_reset),
