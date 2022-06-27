@@ -73,7 +73,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_H   ,KC_J   ,KC_K   ,KC_L   ,KC_SCLN,  KC_QUOT,
 	KC_N   ,KC_M   ,KC_COMM,KC_DOT ,KC_SLSH,KC_RSFT,
                   KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
-           KC_LALT,  KC_RCTL, 
+           KC_RALT,  KC_RCTL, 
            LALT_T(KC_PGUP),
            TD(TD_GUI_PGDN),  KC_ENTER ,  LT(MOD, KC_SPC)
     ),
@@ -103,7 +103,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
            KC_EQL, KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
            KC_TAB, KC_ESC   ,RCS(KC_TAB)   ,RCTL(KC_T)   ,RCTL(KC_TAB)   ,KC_T   ,
-           KC_CAPS, KC_A   ,KC_S   ,ALT_TAB   ,KC_F   ,KC_G   ,
+           KC_CAPS, KC_A   ,RGUI(LSFT(KC_S))   ,ALT_TAB   ,KC_F   ,KC_G   ,
            KC_LSFT,KC_Z   ,KC_X   , RCTL(KC_W)  , KC_V   ,KC_B   ,
                    KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
 			                            KC_LCTL,  KC_LALT,
@@ -473,7 +473,7 @@ void dance_TD_GUI_PGDN_finished(qk_tap_dance_state_t *state, void *user_data) {
     dance_state.step = dance_TD_GUI_PGDN_dance_step(state);
     switch (dance_state.step)  {
         case SINGLE_TAP: register_code16(KC_PGDN); break;
-        case SINGLE_HOLD: register_code16(KC_LGUI); break;
+        case SINGLE_HOLD: register_code16(KC_RGUI); break;
         case DOUBLE_TAP: register_code16(KC_PGDN); register_code16(KC_END); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_PGDN); register_code16(KC_END);
     }
@@ -483,7 +483,7 @@ void dance_TD_GUI_PGDN_reset(qk_tap_dance_state_t *state, void *user_data) {
     wait_ms(10);
     switch (dance_state.step) {
         case SINGLE_TAP: unregister_code16(KC_PGDN); break;
-        case SINGLE_HOLD: unregister_code16(KC_LGUI); break;
+        case SINGLE_HOLD: unregister_code16(KC_RGUI); break;
         case DOUBLE_TAP: unregister_code16(KC_PGDN); break;
         case DOUBLE_SINGLE_TAP: unregister_code16(KC_PGDN); break;
     }
