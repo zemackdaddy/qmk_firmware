@@ -24,10 +24,11 @@ enum tap_dance_codes {
     //mouse layer could exit with F1 instead of end
 };
 
-#define QWERTY 0 // Base qwerty
-#define MOUSE 1
-#define MOD 2
-#define CLEAN 3
+#define DVORAK 0 // Base
+#define QWERTY 1
+#define MOUSE 2
+#define MOD 3
+#define CLEAN 4
 
 /****************************************************************************************************
 *
@@ -56,10 +57,32 @@ enum tap_dance_codes {
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+[DVORAK] = LAYOUT(
+           KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
+           HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
+           MEH_T(KC_TAB), KC_QUOT   ,KC_COMM   ,LT(2, KC_DOT)   ,KC_P   ,KC_Y   ,
+           KC_CAPS, KC_A   ,KC_O   ,KC_E   ,KC_U   ,KC_I   ,
+           KC_LSFT,KC_SCLN   ,KC_Q   , KC_J  , KC_K   ,KC_X   ,
+                   KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
+			                            KC_LCTL,  KC_LALT,
+                                                        KC_HOME,
+                                  LT(MOD, KC_BSPC), KC_DEL , TD(TD_GUI_END) ,
+
+  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, TO(QWERTY),
+	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
+	KC_F   ,KC_G  ,KC_C   ,KC_R   ,KC_L   ,MEH_T(KC_SLSH),
+	KC_D   ,KC_H   ,KC_T   ,KC_N   ,KC_S,  KC_BSLS,
+	KC_B   ,KC_M   ,KC_W, KC_V ,KC_Z, KC_RSFT,
+                  KC_UP  ,KC_DOWN,KC_LBRC,KC_RBRC,
+           KC_RALT,  KC_RCTL, 
+           LALT_T(KC_PGUP),
+           TD(TD_GUI_PGDN),  KC_ENTER ,  LT(MOD, KC_SPC)
+    ),
+
 [QWERTY] = LAYOUT(
            KC_ESC, KC_F1  ,KC_F2  ,KC_F3  ,KC_F4  ,KC_F5  ,KC_F6  ,KC_F7  ,KC_F8,
            HYPR_T(KC_EQL), KC_1   ,KC_2   ,KC_3   ,KC_4   ,KC_5   ,
-           MEH_T(KC_TAB), KC_Q   ,KC_W   ,LT(1, KC_E)   ,KC_R   ,KC_T   ,
+           MEH_T(KC_TAB), KC_Q   ,KC_W   ,LT(2, KC_E)   ,KC_R   ,KC_T   ,
            KC_CAPS, KC_A   ,KC_S   ,KC_D   ,KC_F   ,KC_G   ,
            KC_LSFT,KC_Z   ,KC_X   , KC_C  , KC_V   ,KC_B   ,
                    KC_GRV ,KC_INS ,KC_LEFT, KC_RGHT,
@@ -67,7 +90,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                         KC_HOME,
                                   LT(MOD, KC_BSPC), KC_DEL , TD(TD_GUI_END) ,
 
-  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, KC_FN0,
+  KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  , KC_PAUS, KC_FN0, TO(DVORAK),
 	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,HYPR_T(KC_MINS),
 	KC_Y   ,KC_U   ,KC_I   ,KC_O   ,KC_P   ,MEH_T(KC_BSLS),
 	KC_H   ,KC_J   ,KC_K   ,KC_L   ,KC_SCLN,  KC_QUOT,
@@ -87,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                    KC_GRV ,KC_INS ,LGUI(LALT(KC_I)),LGUI(LALT(KC_K)),
 			   KC_LCTL,KC_LALT,
                                     KC_HOME,
-                           KC_BSPC,KC_DEL ,TO(QWERTY) ,
+                           KC_BSPC,KC_DEL ,TO(DVORAK) ,
     KC_F9  ,KC_F10 ,KC_F11 ,KC_F12 ,KC_PSCR ,KC_SLCK  ,KC_PAUS, KC_FN0, RESET,
 	KC_6   ,KC_7   ,KC_8   ,KC_9   ,KC_0   ,KC_MINS,
 	KC_Y   ,KC_BTN1   ,KC_MS_U   ,KC_BTN2   ,KC_P   ,KC_BSLS,
