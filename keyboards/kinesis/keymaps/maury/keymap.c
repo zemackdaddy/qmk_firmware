@@ -175,7 +175,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         if (!is_alt_tab_active) {
           is_alt_tab_active = true;
-          register_code(KC_LALT);
+          register_code(KC_RGUI);
         }
         alt_tab_timer = timer_read();
         register_code(KC_TAB);
